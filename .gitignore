@@ -1,0 +1,8 @@
+# local dev artifacts
+.playwright-mcp/
+captures/
+node_modules/
+.DS_Store
+*.log
+# companion runtime
+companion/.session

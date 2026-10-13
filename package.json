@@ -1,0 +1,12 @@
+{
+  "name": "sentinel",
+  "version": "1.0.0",
+  "description": "A beginner's cybersecurity console: real recon tools on live data, every term explained.",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "start": "node companion/server.mjs",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "engines": { "node": ">=18" }
+}

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sentinel</title>
+<meta name="description" content="Sentinel: a beginner's cybersecurity console. Real recon tools on live internet data, every term explained, no login and no API keys.">
+<meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<script>try{var t=JSON.parse(localStorage.getItem('sentinel-theme'));if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
+      integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw==" crossorigin="anonymous">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar" id="topbar"></header>
+<div class="app">
+  <nav class="rail" id="rail" aria-label="Tools"></nav>
+  <main class="main" id="main" tabindex="-1"></main>
+</div>
+<div id="tip" role="tooltip"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"
+        integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g==" crossorigin="anonymous"></script>
+<script src="config.js"></script>
+<script src="companion.js"></script>
+<script src="js/core.js"></script>
+<script src="js/glossary.js"></script>
+<!-- tools: one file per category; registration order = order within a sidebar group -->
+<script src="js/tools/learn.js"></script>
+<script src="js/tools/routing.js"></script>
+<script src="js/tools/dns.js"></script>
+<script src="js/tools/whois.js"></script>
+<script src="js/tools/ct.js"></script>
+<script src="js/tools/reputation.js"></script>
+<script src="js/tools/typosquat.js"></script>
+<script src="js/tools/email.js"></script>
+<script src="js/tools/sitefiles.js"></script>
+<script src="js/tools/credentials.js"></script>
+<script src="js/tools/crypto.js"></script>
+<script src="js/home.js"></script>
+<script>Sentinel.start();</script>
+</body>
+</html>
