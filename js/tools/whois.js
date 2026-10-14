@@ -20,7 +20,7 @@ async function runWhois(input,out){
     if(S.isIP(input)){
       const d=await api.rdapIp(input);
       out.innerHTML=`
-        <div class="card verdict full"><h2>IP block</h2><div class="big">${svg('globe')}${esc(d.name||input)}</div>
+        <div class="card verdict full"><h2 class="big">${svg('globe')}${esc(d.name||input)}</h2>
           <div class="sub">${esc(d.handle||'')} · ${esc(d.country||'')} · ${esc(d.type||'')}</div></div>
         <div class="card full"><h2>Details</h2><div class="kv">
           <div class="k">Range</div><div class="v">${esc(d.startAddress||'')} – ${esc(d.endAddress||'')}</div>
@@ -40,8 +40,8 @@ async function runWhois(input,out){
     const young = ageDays!=null && ageDays<90;
     const cls=young?'warn':'safe';
     out.innerHTML=`
-      <div class="card verdict ${cls} full"><h2>Domain</h2>
-        <div class="big">${svg(young?'alert':'check')}${esc(d.ldhName||input)}</div>
+      <div class="card verdict ${cls} full">
+        <h2 class="big">${svg(young?'alert':'check')}${esc(d.ldhName||input)}</h2>
         <div class="sub">${regName?`Registered via <b>${esc(regName)}</b>`:''}${ageDays!=null?` · ${ageDays} days old`:''}. ${young?'Recently registered domains are disproportionately used for phishing — treat with caution.':'Established registration.'}</div></div>
       <div class="card"><h2>Registration</h2><div class="kv">
         <div class="k">${t('registrar','Registrar')}</div><div class="v">${esc(regName||'—')}</div>

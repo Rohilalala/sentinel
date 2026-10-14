@@ -6,3 +6,4 @@ node_modules/
 *.log
 # companion runtime
 companion/.session
+# parallel agent worktrees

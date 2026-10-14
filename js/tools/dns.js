@@ -32,9 +32,9 @@ async function runDNS(domain,out){
       || '<tr><td colspan="2" class="mut">No records returned.</td></tr>';
 
     out.innerHTML=`
-      <div class="card verdict ${emailCls} full"><h2>Email spoofing protection</h2>
-        <div class="big">${svg(emailCls==='safe'?'check':emailCls==='warn'?'alert':'x')}${emailCls==='safe'?'Protected':emailCls==='warn'?'Weak (p=none)':'Spoofable'}</div>
-        <div class="sub">${spf?`Has ${t('SPF')}`:`<b style="color:var(--danger)">No ${t('SPF')}</b>`} · ${dmarc?`${t('DMARC')} policy <b>${esc(pol)}</b>`:`<b style="color:var(--danger)">No ${t('DMARC')}</b>`}. ${spoofable?'An attacker could send phishing email that appears to come from this domain.':'Anti-spoofing is enforced.'}</div></div>
+      <div class="card verdict ${emailCls} full">
+        <h2 class="big">${svg(emailCls==='safe'?'check':emailCls==='warn'?'alert':'x')}${emailCls==='safe'?'Protected':emailCls==='warn'?'Weak (p=none)':'Spoofable'}</h2>
+        <div class="sub">${spf?`Has ${t('SPF')}`:`<b style="color:var(--bad)">No ${t('SPF')}</b>`} · ${dmarc?`${t('DMARC')} policy <b>${esc(pol)}</b>`:`<b style="color:var(--bad)">No ${t('DMARC')}</b>`}. ${spoofable?'An attacker could send phishing email that appears to come from this domain.':'Anti-spoofing is enforced.'}</div></div>
       <div class="card"><h2>Security flags</h2><div class="kv">
         <div class="k">${t('DNSSEC')}</div><div class="v">${dnssec?badge('b-safe','check','SIGNED'):badge('b-warn','alert','unsigned')}</div>
         <div class="k">${t('SPF')}</div><div class="v">${spf?badge('b-safe','check','present'):badge('b-danger','x','missing')}</div>

@@ -48,8 +48,8 @@ function renderRouting(out,{input,ip,prefix,origins,byAsn,geo,less}){
     return `<div>AS${esc(o.asn)} <span class="mut">${esc(o.holder||'')}</span> ${badge(b,i,x)}</div>`;}).join('');
 
   out.innerHTML=`
-    <div class="card verdict ${cls}"><h2>Verdict</h2>
-      <div class="big">${svg(ic)}${big}</div><div class="sub">${sub}</div></div>
+    <div class="card verdict ${cls}">
+      <h2 class="big">${svg(ic)}${big}</h2><div class="sub">${sub}</div></div>
     <div class="card"><h2>Resource</h2><div class="kv">
       <div class="k">Query</div><div class="v">${esc(input)}</div>
       <div class="k">Resolved IP</div><div class="v">${esc(ip)}</div>
@@ -109,9 +109,9 @@ async function runASN(n,out){
     const rows=await Promise.all(prefixes.map(p=>api.rpki(n,p).then(d=>[p,d.status]).catch(()=>[p,'unknown'])));
     const bad=rows.filter(([,s])=>/invalid/.test(s)).length;
     out.innerHTML=`
-      <div class="card verdict ${bad?'danger':'safe'} full"><h2>Verdict</h2>
-        <div class="big">${svg(bad?'alert':'check')}${esc(ov.holder||('AS'+n))}</div>
-        <div class="sub">AS${esc(n)} announces <b>${rows.length}</b> prefixes (showing up to 20) · ${bad?`<span style="color:var(--danger)">${bad} RPKI-invalid</span>`:'none RPKI-invalid'}.</div></div>
+      <div class="card verdict ${bad?'danger':'safe'} full">
+        <h2 class="big">${svg(bad?'alert':'check')}${esc(ov.holder||('AS'+n))}</h2>
+        <div class="sub">AS${esc(n)} announces <b>${rows.length}</b> prefixes (showing up to 20) · ${bad?`<span style="color:var(--bad)">${bad} RPKI-invalid</span>`:'none RPKI-invalid'}.</div></div>
       <div class="card full"><h2>Announced prefixes</h2><table><thead><tr><th>${t('prefix','Prefix')}</th><th>RPKI</th></tr></thead><tbody>${
         rows.map(([p,s])=>{const[b,i,x]=rpkiBadge(s);return `<tr><td class="path">${esc(p)}</td><td>${badge(b,i,x)}</td></tr>`;}).join('')}</tbody></table></div>`;
     S.say('');

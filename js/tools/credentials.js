@@ -25,8 +25,8 @@ async function runPwned(pw,out){
     const str=strength(pw);
     const cls=count?'danger':(str.score<3?'warn':'safe');
     out.innerHTML=`
-      <div class="card verdict ${cls} full"><h2>Breach check</h2>
-        <div class="big">${svg(count?'x':'check')}${count?`Seen ${count.toLocaleString()} times`:'Not found in breaches'}</div>
+      <div class="card verdict ${cls} full">
+        <h2 class="big">${svg(count?'x':'check')}${count?`Seen ${count.toLocaleString()} times`:'Not found in breaches'}</h2>
         <div class="sub">${count?`This exact password appears in <b>${count.toLocaleString()}</b> known ${t('breach','breaches')}. Never use it — attackers try leaked passwords first.`:`This password wasn't in the ${t('breach','breach')} corpus. That doesn't mean it's strong — see below.`}</div></div>
       <div class="card"><h2>Strength</h2>
         <div class="meter"><i style="width:${(str.score+1)*20}%;background:${str.color}"></i></div>
@@ -44,7 +44,7 @@ function strength(pw){
   let score=0; if(pw.length>=8)score++; if(pw.length>=12)score++; if(sets>=3)score++; if(sets>=4&&pw.length>=14)score++;
   if(/^(password|123456|qwerty|admin)/i.test(pw))score=0;
   const labels=['very weak','weak','fair','strong','very strong'];
-  const colors=['var(--danger)','var(--danger)','var(--warn)','var(--safe)','var(--safe)'];
+  const colors=['var(--bad)','var(--bad)','var(--warn)','var(--ok)','var(--ok)'];
   const tips=[]; if(pw.length<12)tips.push('Use 12+ characters — length beats complexity.');
   if(sets<3)tips.push('Mix upper, lower, digits and symbols.');
   if(bits<60)tips.push('Aim for 60+ bits; a 4-word passphrase gets there easily.');

@@ -141,10 +141,10 @@ const Sentinel = (() => {
     const run = v => {
       v = (v || '').trim(); if (!v) { q.focus(); return; }
       go.setAttribute('aria-busy', 'true'); if (hd) hd.setAttribute('aria-busy', 'true');
-      Promise.resolve(cfg.run(v, out)).catch(e => say(e.message, true)).finally(() => {
+      Promise.resolve().then(() => cfg.run(v, out)).catch(e => say(e.message, true)).finally(() => {
         go.removeAttribute('aria-busy'); if (hd) hd.removeAttribute('aria-busy');
         const vd = out.querySelector('.verdict');
-        if (vd && current) record({ tool: current, input: cfg.type === 'password' ? '••••••' : v,
+        if (vd && current) record({ tool: current, input: cfg.type === 'password' || cfg.secret ? '••••••' : v,
           cls: ['danger', 'warn', 'safe'].find(c => vd.classList.contains(c)) || 'info',
           title: (vd.querySelector('.big') || vd).textContent.trim().slice(0, 80) });
       });
@@ -156,6 +156,11 @@ const Sentinel = (() => {
       if (cfg.demo) { hd.hidden = false; hd.onclick = () => { q.value = cfg.demo.input; if (cfg.demo.narrate) toast(cfg.demo.narrate); run(cfg.demo.input); }; }
       else hd.hidden = true;
     }
+    /* deep link: #/<id>?q=<value> opens the tool and runs it on value. While the companion runs, any tool
+       may reach it (native tools, Site Files), so deep links only prefill: a link alone must never make
+       the companion act on your network. */
+    const pre = new URLSearchParams(G.location.hash.split('?')[1] || '').get('q');
+    if (pre) { q.value = pre; if (companion() || (current && tagOf(modules[current]) === 'native')) say(`Check the target, then press ${cfg.cta || 'Check'}.`); else run(pre); }
     return { q, out, run };
   }
   /* for tools with custom UIs: show the header Run example button and bind it */
@@ -243,7 +248,7 @@ const Sentinel = (() => {
   }
 
   function route() {
-    const id = location.hash.replace(/^#\/?/, '') || 'home';
+    const id = location.hash.replace(/^#\/?/, '').split('?')[0] || 'home';
     const active = modules[id] ? id : 'home';
     current = active === 'home' ? null : active;
     renderRail(active);

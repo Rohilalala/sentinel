@@ -19,7 +19,7 @@ S.register({ id:'emailhdr', name:'Email Headers', group:'Web & email', icon:'mai
   why:`Email headers are a message's forensic trail. The ${t('Received header','Received: lines')} show every server it passed through (read bottom-up for the origin), and Authentication-Results shows ${t('SPF')} / ${t('DKIM')} / ${t('DMARC')} pass or fail — the fastest way to tell a phish from the real thing.`,
   render(mount){
     mount.innerHTML=`
-      <div class="field"><label for="hdrin">Raw email headers</label><textarea id="hdrin" rows="7" style="width:100%;font:13px var(--mono)" placeholder="Paste raw headers. Gmail: More → Show original. Outlook: File → Properties."></textarea></div>
+      <div class="field"><label for="hdrin">Raw email headers</label><textarea id="hdrin" rows="7" style="width:100%;font:13px var(--font-mono)" placeholder="Paste raw headers. Gmail: More → Show original. Outlook: File → Properties."></textarea></div>
       <div id="out" class="grid"></div>`;
     const ta=$('#hdrin',mount), out=$('#out',mount);
     const run=()=>renderHeaders(ta.value,out);
@@ -46,8 +46,8 @@ function renderHeaders(raw,out){
   const cls=fail?'danger':allpass?'safe':'warn';
   const authBadge=v=>v==='pass'?badge('b-safe','check','pass'):v==='fail'?badge('b-danger','x','fail'):badge('b-mut','info',v||'—');
   out.innerHTML=`
-    <div class="card verdict ${cls} full"><h2>Authentication</h2>
-      <div class="big">${svg(fail?'x':allpass?'check':'alert')}${fail?'Failed anti-spoofing':allpass?'Passed anti-spoofing':'Partial / unverified'}</div>
+    <div class="card verdict ${cls} full">
+      <h2 class="big">${svg(fail?'x':allpass?'check':'alert')}${fail?'Failed anti-spoofing':allpass?'Passed anti-spoofing':'Partial / unverified'}</h2>
       <div class="sub">${fail?'One or more of SPF/DKIM/DMARC <b>failed</b> — this message is very likely forged (phishing).':allpass?'SPF and DMARC passed — the sender is authorized.':'Not all checks were present or passing. Inspect below.'}</div></div>
     <div class="card"><h2>Checks</h2><div class="kv">
       <div class="k">${t('SPF')}</div><div class="v">${authBadge(h.spf)}</div>

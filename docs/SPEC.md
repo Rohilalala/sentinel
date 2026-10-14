@@ -131,6 +131,7 @@ document title and moves focus to the H1.
 | `S.companion()` | `null` or `{token, tools}` when served by the companion. |
 | `S.record({tool, input, cls, title})` | Add to local check history. `searchTool` does this automatically when a `.verdict` card renders. |
 | `S.lib` | Put pure, testable functions here. |
+| `#/<id>?q=<value>` | Deep link: opens a `searchTool` tool and runs it on `value` (e.g. `#/cve?q=CVE-2021-44228`). Use it to link one tool's result into another. `native` tools, and every tool while the companion runs, only prefill: a link alone never makes the companion act. |
 
 **`S.register(mod)` fields**
 
@@ -153,6 +154,7 @@ document title and moves focus to the H1.
 | `label` | Visible input label (required for accessibility; defaults to "Target"). |
 | `placeholder` | Example format, never the only label. |
 | `type` | `'password'` for secrets (history stores `••••••`). |
+| `secret` | `true` = keep the input visible but store `••••••` in history (hashes, tokens). |
 | `cta` | Submit button text (default "Check"). |
 | `examples` | Array shown as "Try:" links. |
 | `demo` | `{input, narrate}` — powers the header **Run example** and its toast. |
@@ -210,7 +212,7 @@ S.register({ id: 'example', name: 'Example', group: 'Recon', icon: 'globe',
 
 ## 3. Design system and UI process
 
-### 3.1 The committed world 
+### 3.1 The committed world
 
 - **THESIS:** the cal.com / Linear / Vercel console played straight for learning
   security on live data. Refuses the generic dashboard look (gradient hero, icon-tile
@@ -302,6 +304,14 @@ head -c 600 /tmp/body
 
 Legend for **Status**: ✔ built · ▢ to build. **Tag**: live / local / native.
 Bundle = the file it lives in.
+
+**Build status (2026-10-14):** every tool in 5.2–5.7 is built (45 registered tools), except:
+- **Scanner Check** (5.2): dropped. GreyNoise's community API answers any request that carries an
+  `Origin` header with 403 and no CORS header, so it can never work from a browser.
+- **Tool Library** and **Practice Labs** (5.7): not built.
+- **Security Headers (live)** (5.7) lives in `js/tools/webtools.js` next to the Header Analyzer grader it shares.
+- **OWASP Top 10** (5.3) uses the 2025 edition, final as of this build, instead of 2021.
+- **URL Inspector** is `#/urlinspect`; all other ids are as registered in each bundle file.
 
 ### 5.1 Already built (keep working; regressions are failures)
 
