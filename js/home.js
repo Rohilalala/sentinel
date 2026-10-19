@@ -38,7 +38,7 @@ S.renderHome = main => {
     <div class="kpis">
       ${kpi('Checks run', h.length)}
       ${kpi('Issues found', issues, issues ? 'need a look' : '')}
-      ${kpi('Tools used', used, `of ${mods.filter(m => m.group !== 'Learn').length}`)}
+      ${kpi('Tools used', used, `of ${mods.length}`)}
       ${kpi('Last check', h[0] ? ago(h[0].ts) : '—')}
     </div>
     <section class="section"><div class="section-head"><h2>Recent checks</h2><p>Stored only in this browser.</p></div>

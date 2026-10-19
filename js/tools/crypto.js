@@ -10,31 +10,31 @@ S.register({ id:'toolkit', name:'Hash & Encode', group:'Crypto', icon:'tool', ta
   render(mount){
     mount.innerHTML=`<div class="grid">
       <div class="card full"><h2>${t('hash','Hash')} (SHA, live)</h2>
-        <textarea id="hin" rows="2" style="width:100%;font:14px var(--mono)" placeholder="type anything…">hello</textarea>
+        <textarea id="hin" rows="2" style="width:100%;font:14px var(--font-mono)" placeholder="type anything…">hello</textarea>
         <div class="kv" style="margin-top:10px">
           <div class="k">${t('SHA-256')}</div><div class="v" id="h256"></div>
           <div class="k">SHA-1</div><div class="v" id="h1"></div>
           <div class="k">SHA-512</div><div class="v" id="h512" style="font-size:12px"></div></div></div>
 
       <div class="card"><h2>${t('Base64')}</h2>
-        <textarea id="b64in" rows="3" style="width:100%;font:14px var(--mono)" placeholder="plain text"></textarea>
-        <div class="bar" style="margin:8px 0"><button class="btn ghost" id="b64e">Encode →</button><button class="btn ghost" id="b64d">← Decode</button></div>
-        <textarea id="b64out" rows="3" style="width:100%;font:14px var(--mono)" placeholder="base64"></textarea></div>
+        <textarea id="b64in" rows="3" style="width:100%;font:14px var(--font-mono)" placeholder="plain text"></textarea>
+        <div class="bar" style="margin:8px 0"><button class="btn secondary" id="b64e">Encode →</button><button class="btn secondary" id="b64d">← Decode</button></div>
+        <textarea id="b64out" rows="3" style="width:100%;font:14px var(--font-mono)" placeholder="base64"></textarea></div>
 
       <div class="card"><h2>URL · Hex · ROT13</h2>
-        <textarea id="xin" rows="3" style="width:100%;font:14px var(--mono)" placeholder="input">Hello, World!</textarea>
+        <textarea id="xin" rows="3" style="width:100%;font:14px var(--font-mono)" placeholder="input">Hello, World!</textarea>
         <div class="bar" style="margin:8px 0;gap:6px">
-          <button class="btn ghost" data-x="urle">URL enc</button><button class="btn ghost" data-x="urld">URL dec</button>
-          <button class="btn ghost" data-x="hexe">→ Hex</button><button class="btn ghost" data-x="hexd">Hex →</button>
-          <button class="btn ghost" data-x="rot">ROT13</button></div>
-        <textarea id="xout" rows="3" style="width:100%;font:14px var(--mono)" placeholder="output"></textarea></div>
+          <button class="btn secondary" data-x="urle">URL enc</button><button class="btn secondary" data-x="urld">URL dec</button>
+          <button class="btn secondary" data-x="hexe">→ Hex</button><button class="btn secondary" data-x="hexd">Hex →</button>
+          <button class="btn secondary" data-x="rot">ROT13</button></div>
+        <textarea id="xout" rows="3" style="width:100%;font:14px var(--font-mono)" placeholder="output"></textarea></div>
 
       <div class="card"><h2>Subnet / CIDR calculator</h2>
         <input id="cidrin" style="width:100%" placeholder="192.168.1.0/24" value="10.0.0.0/24">
         <div class="kv" id="cidrout" style="margin-top:12px"></div></div>
 
       <div class="card full"><h2>${t('JWT')} decoder</h2>
-        <textarea id="jin" rows="3" style="width:100%;font:13px var(--mono)" placeholder="paste a JWT: header.payload.signature"></textarea>
+        <textarea id="jin" rows="3" style="width:100%;font:13px var(--font-mono)" placeholder="paste a JWT: header.payload.signature"></textarea>
         <div class="grid two" style="margin-top:10px">
           <div><div class="mut" style="font-size:12px;margin-bottom:4px">HEADER</div><pre id="jh" class="mono" style="background:var(--surface-2);padding:10px;border-radius:7px;overflow:auto;margin:0;font-size:12px"></pre></div>
           <div><div class="mut" style="font-size:12px;margin-bottom:4px">PAYLOAD</div><pre id="jp" class="mono" style="background:var(--surface-2);padding:10px;border-radius:7px;overflow:auto;margin:0;font-size:12px"></pre></div>
@@ -82,6 +82,9 @@ function wireToolkit(m){
   const ji=$('#jin',m); ji.addEventListener('input',()=>{ const parts=ji.value.trim().split('.');
     const show=(el,p)=>{ try{ $(el,m).textContent=JSON.stringify(JSON.parse(b64dec(p)),null,2);}catch(e){ $(el,m).textContent=p?'(invalid)':''; } };
     show('#jh',parts[0]); show('#jp',parts[1]); });
+  demoButton(()=>{ S.toast('Decoding the standard sample JWT and Base64-encoding a string. None of it leaves your browser.');
+    ji.value='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+    ji.dispatchEvent(new Event('input')); $('#b64in',m).value='Hello, World!'; $('#b64e',m).onclick(); ji.scrollIntoView({block:'center'}); });
 }
 Object.assign(S.lib, { cidrInfo, b64enc, b64dec, rot13, toHex, fromHex });
 

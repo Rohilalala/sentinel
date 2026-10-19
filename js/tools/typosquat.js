@@ -30,8 +30,8 @@ async function runTyposquat(input,out){
     .then(d=>({v,live:(d.Answer||[]).some(a=>a.type===1),ip:(d.Answer||[]).filter(a=>a.type===1).map(a=>a.data)[0]})).catch(()=>({v,live:false}))));
   const live=rows.filter(r=>r.live).sort((a,b)=>a.v.localeCompare(b.v));
   out.innerHTML=`
-    <div class="card verdict ${live.length?'warn':'safe'} full"><h2>Lookalikes</h2>
-      <div class="big">${svg(live.length?'alert':'check')}${live.length} of ${variants.length} registered</div>
+    <div class="card verdict ${live.length?'warn':'safe'} full">
+      <h2 class="big">${svg(live.length?'alert':'check')}${live.length} of ${variants.length} registered</h2>
       <div class="sub">${live.length?`${live.length} ${t('typosquatting','lookalike')} domain(s) of <b>${esc(input)}</b> already resolve — each could host a phishing copy. Review them below.`:`None of the generated lookalikes of ${esc(input)} currently resolve.`}</div></div>
     <div class="card full"><h2>Registered lookalikes</h2>${live.length?`<table><thead><tr><th>Domain</th><th>Resolves to</th></tr></thead><tbody>${
       live.map(r=>`<tr><td class="mono">${esc(r.v)}</td><td class="mono mut">${esc(r.ip||'—')}</td></tr>`).join('')}</tbody></table>`:'<span class="mut">none resolving</span>'}</div>

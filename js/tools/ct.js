@@ -22,8 +22,8 @@ async function runCT(domain,out){
       certs.push({issuer:(iss.issuer&&iss.issuer.name)||'',not_after:iss.not_after,names:(iss.dns_names||[]).length}); }
     const subs=[...names].filter(n=>n.endsWith(domain)).sort();
     out.innerHTML=`
-      <div class="card verdict full"><h2>Attack surface</h2>
-        <div class="big">${svg('cert')}${subs.length} name${subs.length===1?'':'s'} found</div>
+      <div class="card verdict full">
+        <h2 class="big">${svg('cert')}${subs.length} name${subs.length===1?'':'s'} found</h2>
         <div class="sub">Across ${certs.length} certificates in public CT logs for <b>${esc(domain)}</b>. Each is a host that may be reachable. (Free CT feeds show recent issuances; a full history needs an API key.)</div></div>
       <div class="card"><h2>Subdomains</h2><div style="max-height:360px;overflow:auto">${
         subs.map(s=>`<div class="mono" style="padding:3px 0">${esc(s)}</div>`).join('')||'<span class="mut">none</span>'}</div></div>

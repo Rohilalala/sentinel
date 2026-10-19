@@ -2,7 +2,7 @@
 
 There is no video file in this project — nothing here can render an MP4. What
 this gives you instead is better for learning and lets you record your own
-voice-over later: every tool has a **▶ Show me** button that runs a real
+voice-over later: every tool has a **Run example** button that runs a real
 example live, and below is the word-for-word narration for each one, timed to
 what appears on screen. Read it aloud over a screen recording (QuickTime →
 File → New Screen Recording) and you have your tutorial videos.
@@ -33,7 +33,7 @@ explains on hover.
 > own, traffic starts flowing to me. That's a **prefix hijack**, and it took
 > YouTube offline globally in 2008.
 >
-> Watch. I'll click Show me, which checks Cloudflare's deliberately-broken test
+> Watch. I'll click Run example, which checks Cloudflare's deliberately-broken test
 > host. The verdict comes back red: **RPKI INVALID**. RPKI is the fix — the real
 > owner signs a statement saying "only my network may announce this prefix", and
 > this route violates it.
@@ -52,7 +52,7 @@ explains on hover.
 ## 2. DNS & Email — "can someone send email as you?" (55s)
 
 > **DNS** is the internet's phone book — it turns names into addresses. But it
-> also tells you whether a domain's email can be forged. Click Show me on
+> also tells you whether a domain's email can be forged. Click Run example on
 > cloudflare.com.
 >
 > Up top: is the email **spoofable**? That depends on two DNS records. **SPF**
@@ -73,7 +73,7 @@ explains on hover.
 
 > Before trusting a link, analysts check **WHOIS** — who registered the domain,
 > when, and through which **registrar**. Sentinel uses **RDAP**, the modern
-> structured version. Click Show me on github.com.
+> structured version. Click Run example on github.com.
 >
 > There's the registrar, the creation date, the expiry, and the status locks
 > that stop the domain being transferred out from under them. The single most
@@ -94,7 +94,7 @@ explains on hover.
 > every **subdomain** a company ever got a certificate for, including internal
 > ones they forgot about: dev, staging, vpn, admin.
 >
-> Click Show me on github.com. Sentinel pulls their certificates and extracts
+> Click Run example on github.com. Sentinel pulls their certificates and extracts
 > every hostname. This is exactly step one of how a bug-bounty hunter — or an
 > attacker — maps a target. Forgotten subdomains are where the old, unpatched
 > software lives. Run it on your own domain and see what's exposed.
@@ -110,7 +110,7 @@ explains on hover.
 > already in every attacker's wordlist. But how do you check a password without
 > sending it somewhere? **k-anonymity**.
 >
-> Click Show me. Sentinel hashes the password right here in your browser, and
+> Click Run example. Sentinel hashes the password right here in your browser, and
 > sends only the first five characters of that hash. The server replies with
 > every leaked hash starting with those five characters — about two thousand of
 > them — and the match happens locally. The server never learns your password.
@@ -153,6 +153,6 @@ explains on hover.
 
 ## Recording checklist
 - QuickTime screen recording at 1280×800, Sentinel in a clean browser window.
-- One tool per clip; click **Show me**; read the matching script above.
+- One tool per clip; click **Run example**; read the matching script above.
 - The toast at the bottom narrates the action on screen — pause on it.
 - Keep each clip under 75s. Six clips + the intro = a complete beginner course.

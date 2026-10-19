@@ -21,8 +21,8 @@ async function runBlocklist(input,out){
       api.doh(rev+'.'+zone,'A').then(d=>({name,listed:(d.Answer||[]).length>0,code:(d.Answer||[]).map(a=>a.data).join(', ')})).catch(()=>({name,listed:false,code:'error'}))));
     const listed=rows.filter(r=>r.listed).length;
     out.innerHTML=`
-      <div class="card verdict ${listed?'danger':'safe'} full"><h2>Reputation</h2>
-        <div class="big">${svg(listed?'x':'check')}${listed?`Listed on ${listed} of ${rows.length}`:'Clean on all lists'}</div>
+      <div class="card verdict ${listed?'danger':'safe'} full">
+        <h2 class="big">${svg(listed?'x':'check')}${listed?`Listed on ${listed} of ${rows.length}`:'Clean on all lists'}</h2>
         <div class="sub">${esc(ip)} ${listed?`appears on ${listed} ${t('DNSBL','blocklist')}(s) — mail from it may be rejected, and it may be a compromised or abusive host.`:`is not on any of the ${rows.length} checked ${t('DNSBL','blocklists')}.`}</div></div>
       <div class="card full"><h2>Blocklists checked</h2><table><thead><tr><th>List</th><th>Result</th><th>Return code</th></tr></thead><tbody>${
         rows.map(r=>`<tr><td>${esc(r.name)}</td><td>${r.listed?badge('b-danger','x','LISTED'):badge('b-safe','check','clean')}</td><td class="mono mut">${esc(r.code||'—')}</td></tr>`).join('')}</tbody></table></div>`;

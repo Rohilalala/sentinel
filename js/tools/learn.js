@@ -13,6 +13,7 @@ async function runMission(domain,out){
   domain=domain.replace(/^https?:\/\//,'').replace(/\/.*$/,'');
   loading(out); out.innerHTML='';
   const push=html=>out.insertAdjacentHTML('beforeend',html);
+  const verdict=(cls,head,sub)=>out.insertAdjacentHTML('afterbegin',`<div class="card verdict ${cls} full"><h2 class="big">${svg(cls==='safe'?'check':cls==='warn'?'alert':'x')}${esc(head)}</h2><div class="sub">${sub}</div></div>`);
   const step=(ic,title,state,body,link)=>`<div class="card full"><h2>${svg(ic)} ${title} &nbsp;${state}</h2>${body}${link?`<div style="margin-top:8px"><a href="#/${link}">Open full tool →</a></div>`:''}</div>`;
   try{
     S.say('1/5 DNS…');
@@ -20,7 +21,7 @@ async function runMission(domain,out){
     const dmarc=await api.doh('_dmarc.'+domain,'TXT').then(d=>(d.Answer||[]).map(x=>x.data).find(x=>/v=DMARC1/i.test(x))).catch(()=>null);
     push(step('dns','DNS & email', ip?badge('b-safe','check','resolves'):badge('b-danger','x','no A record'),
       `<div class="kv"><div class="k">Resolves to</div><div class="v">${esc(ip||'—')}</div><div class="k">${t('DMARC')}</div><div class="v">${dmarc?badge('b-safe','check','present'):badge('b-warn','alert','missing — spoofable')}</div></div>`,'dns'));
-    if(!ip){ S.say(''); return; }
+    if(!ip){ verdict('danger',`${domain} doesn't resolve`,'There is no A record, so the remaining checks have nothing to look at. Check the spelling.'); S.say(''); return; }
     S.say('2/5 WHOIS…');
     const d=await api.rdapDomain(domain).catch(()=>null);
     let age='—',reg='—'; if(d){ const ev=Object.fromEntries((d.events||[]).map(e=>[e.eventAction,e.eventDate]));
@@ -44,8 +45,11 @@ async function runMission(domain,out){
     const listed=bl.filter(Boolean).length;
     push(step('ban','IP reputation', listed?badge('b-danger','x',listed+' lists'):badge('b-safe','check','clean'),
       `<div class="sub" style="color:var(--muted)">${listed?`Listed on ${listed} ${t('DNSBL','blocklist')}(s).`:'Not on any checked blocklist.'}</div>`,'blocklist'));
+    const issues=[!dmarc&&['warn','no DMARC, so its email can be spoofed'],/invalid/.test(rpki)&&['danger','its route is RPKI-invalid'],listed&&['danger',`its IP is on ${listed} blocklist(s)`]].filter(Boolean);
+    verdict(issues.some(i=>i[0]==='danger')?'danger':issues.length?'warn':'safe', issues.length?`${issues.length} issue${issues.length>1?'s':''} found`:'No issues found',
+      issues.length?`${esc(domain)}: ${issues.map(i=>i[1]).join('; ')}. Open each tool below for the full picture.`:`${esc(domain)} resolves, is registered, and its IP is on no checked blocklist. Each card below links to the full tool.`);
     S.say('');
-  }catch(e){ push(`<div class="why" style="border-left-color:var(--danger)">Mission stopped: ${esc(e.message)}</div>`); S.say(''); }
+  }catch(e){ push(`<div class="why" style="border-left-color:var(--bad)">Mission stopped: ${esc(e.message)}</div>`); S.say(''); }
 }
 
 S.register({ id:'explain', name:'How it works', group:'Learn', icon:'book', tag:'',
@@ -54,7 +58,7 @@ S.register({ id:'explain', name:'How it works', group:'Learn', icon:'book', tag:
   render(mount){
     const scene=(n,title,stage,desc)=>`<div class="scene"><h3><span class="step">${n}</span>${title}</h3>
       <div class="stage">${stage}</div><p>${desc}</p></div>`;
-    const label=(x,y,txt,sub)=>`<text x="${x}" y="${y}" fill="var(--ink)" font-size="12" font-weight="700" text-anchor="middle">${txt}</text>${sub?`<text x="${x}" y="${y+15}" fill="var(--muted)" font-size="10" text-anchor="middle">${sub}</text>`:''}`;
+    const label=(x,y,txt,sub)=>`<text x="${x}" y="${y}" fill="var(--fg)" font-size="12" font-weight="700" text-anchor="middle">${txt}</text>${sub?`<text x="${x}" y="${y+15}" fill="var(--muted)" font-size="10" text-anchor="middle">${sub}</text>`:''}`;
     const box=(x,y,w,h,stroke)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="var(--surface)" stroke="${stroke||'var(--border-strong)'}" stroke-width="1.5"/>`;
 
     mount.innerHTML=`
@@ -63,24 +67,24 @@ S.register({ id:'explain', name:'How it works', group:'Learn', icon:'book', tag:
       ${scene(1,`What a ${t('prefix hijack')} is`,
         `<svg viewBox="0 0 520 170">
           ${box(20,60,110,50)} ${label(75,88,'You',' a user')}
-          ${box(200,20,120,50,'var(--safe)')} ${label(260,48,'AS100 — real owner',' owns 203.0.113.0/24')}
-          ${box(200,110,120,50,'var(--danger)')} ${label(260,138,'AS400 — attacker',' claims the same IPs')}
+          ${box(200,20,120,50,'var(--ok)')} ${label(260,48,'AS100 — real owner',' owns 203.0.113.0/24')}
+          ${box(200,110,120,50,'var(--bad)')} ${label(260,138,'AS400 — attacker',' claims the same IPs')}
           <line x1="130" y1="78" x2="200" y2="48" stroke="var(--border-strong)" stroke-width="1.5"/>
-          <line x1="130" y1="92" x2="200" y2="132" stroke="var(--danger)" stroke-width="2" class="flow-dash"/>
-          <circle r="5" fill="var(--danger)" class="pkt"><animateMotion dur="3s" repeatCount="indefinite" path="M130,92 L200,132"/></circle>
+          <line x1="130" y1="92" x2="200" y2="132" stroke="var(--bad)" stroke-width="2" class="flow-dash"/>
+          <circle r="5" fill="var(--bad)" class="pkt"><animateMotion dur="3s" repeatCount="indefinite" path="M130,92 L200,132"/></circle>
           ${label(410,80,'Traffic goes',' to the attacker')}
         </svg>`,
         `${t('BGP')} is how networks announce which ${t('IP address','IP')} blocks they own. It trusts whatever it's told — so AS400 can announce AS100's ${t('prefix')} and steal the traffic. This took YouTube offline globally in 2008. → Open <b>Routing &amp; RPKI</b>.`)}
 
       ${scene(2,`How ${t('RPKI')} stops it`,
         `<svg viewBox="0 0 520 160">
-          ${box(20,55,120,50,'var(--danger)')} ${label(80,83,'AS400 announces',' 203.0.113.0/24')}
+          ${box(20,55,120,50,'var(--bad)')} ${label(80,83,'AS400 announces',' 203.0.113.0/24')}
           ${box(200,55,120,50)} ${label(260,78,'Router checks',' the ROA')}
           <line x1="140" y1="80" x2="200" y2="80" stroke="var(--border-strong)" stroke-width="1.5" class="flow-dash"/>
-          ${box(380,20,120,45,'var(--safe)')} ${label(440,47,'ROA: only AS100')}
-          ${box(380,95,120,45,'var(--danger)')} ${label(440,118,'✕ REJECTED')}
-          <line x1="320" y1="72" x2="380" y2="43" stroke="var(--safe)" stroke-width="1.5"/>
-          <line x1="320" y1="88" x2="380" y2="117" stroke="var(--danger)" stroke-width="2"/>
+          ${box(380,20,120,45,'var(--ok)')} ${label(440,47,'ROA: only AS100')}
+          ${box(380,95,120,45,'var(--bad)')} ${label(440,118,'✕ REJECTED')}
+          <line x1="320" y1="72" x2="380" y2="43" stroke="var(--ok)" stroke-width="1.5"/>
+          <line x1="320" y1="88" x2="380" y2="117" stroke="var(--bad)" stroke-width="2"/>
         </svg>`,
         `The real owner signs a ${t('ROA')} — "only AS100 may announce this prefix". Routers with ${t('RPKI')} validation check every announcement against it and drop the ones that don't match. The <b>Routing</b> tool shows this verdict (valid / invalid) on real routes.`)}
 
@@ -90,7 +94,7 @@ S.register({ id:'explain', name:'How it works', group:'Learn', icon:'book', tag:
           ${box(190,50,130,50)} ${label(255,73,'DNS over HTTPS',' encrypted')}
           ${box(380,20,120,45)} ${label(440,47,'A record → IP')}
           ${box(380,95,120,45,'var(--warn)')} ${label(440,116,'SPF / DMARC?')}
-          <line x1="130" y1="75" x2="190" y2="75" stroke="var(--accent)" stroke-width="2" class="flow-dash"/>
+          <line x1="130" y1="75" x2="190" y2="75" stroke="var(--fg-2)" stroke-width="2" class="flow-dash"/>
           <line x1="320" y1="68" x2="380" y2="43" stroke="var(--border-strong)" stroke-width="1.5"/>
           <line x1="320" y1="82" x2="380" y2="117" stroke="var(--border-strong)" stroke-width="1.5"/>
         </svg>`,
@@ -99,23 +103,23 @@ S.register({ id:'explain', name:'How it works', group:'Learn', icon:'book', tag:
       ${scene(4,`Why the password check is private (${t('k-anonymity')})`,
         `<svg viewBox="0 0 520 150">
           ${box(20,50,120,50)} ${label(80,73,'Your password',' hashed locally')}
-          ${box(200,50,90,50,'var(--accent)')} ${label(245,78,'send 5 chars')}
+          ${box(200,50,90,50,'var(--fg-2)')} ${label(245,78,'send 5 chars')}
           ${box(350,50,150,50)} ${label(425,73,'server returns ~2000',' candidate hashes')}
           <line x1="140" y1="75" x2="200" y2="75" stroke="var(--border-strong)" stroke-width="1.5"/>
-          <line x1="290" y1="75" x2="350" y2="75" stroke="var(--accent)" stroke-width="2" class="flow-dash"/>
-          <text x="260" y="125" fill="var(--safe)" font-size="11" font-weight="700" text-anchor="middle">match happens in your browser — password never leaves</text>
+          <line x1="290" y1="75" x2="350" y2="75" stroke="var(--fg-2)" stroke-width="2" class="flow-dash"/>
+          <text x="260" y="125" fill="var(--ok)" font-size="11" font-weight="700" text-anchor="middle">match happens in your browser — password never leaves</text>
         </svg>`,
         `Your password is hashed in the browser; only the first 5 characters of the hash are sent. The server replies with every leak whose hash starts with those 5 chars, and the match happens locally. The server never learns your password. → Open <b>Password Exposure</b>.`)}
 
       ${scene(5,`${t('Certificate Transparency')} reveals ${t('subdomain','subdomains')}`,
         `<svg viewBox="0 0 520 150">
           ${box(20,50,110,50)} ${label(75,78,'Any CA issues',' a cert')}
-          ${box(190,50,120,50,'var(--accent)')} ${label(250,73,'public CT log',' append-only')}
+          ${box(190,50,120,50,'var(--fg-2)')} ${label(250,73,'public CT log',' append-only')}
           ${box(370,30,130,40)} ${label(435,54,'mail.site.com')}
           ${box(370,80,130,40)} ${label(435,104,'vpn.site.com')}
           <line x1="130" y1="75" x2="190" y2="75" stroke="var(--border-strong)" stroke-width="1.5"/>
-          <line x1="310" y1="70" x2="370" y2="50" stroke="var(--accent)" stroke-width="1.5" class="flow-dash"/>
-          <line x1="310" y1="80" x2="370" y2="100" stroke="var(--accent)" stroke-width="1.5" class="flow-dash"/>
+          <line x1="310" y1="70" x2="370" y2="50" stroke="var(--fg-2)" stroke-width="1.5" class="flow-dash"/>
+          <line x1="310" y1="80" x2="370" y2="100" stroke="var(--fg-2)" stroke-width="1.5" class="flow-dash"/>
         </svg>`,
         `Every ${t('TLS certificate')} is written to public ${t('Certificate Transparency')} logs. Searching them reveals hidden ${t('subdomain','subdomains')} — dev, staging, vpn — which is how attackers and bug-bounty hunters map a target's attack surface. → Open <b>Cert Transparency</b>.`)}
 
